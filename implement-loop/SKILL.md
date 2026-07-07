@@ -2,7 +2,7 @@
 name: implement-loop
 description: |
   Process a batch of work items: implement each via a TDD subagent, review
-  via a reviewer subagent, fix until clean, then create a PR.
+  via a reviewer subagent, fix until clean, align docs, then create a PR.
 
   Use when the user says "implement these issues", "process this queue",
   "agentic loop", or passes a list of items to implement. User-invoked only.
@@ -12,8 +12,8 @@ disable-model-invocation: true
 # Implementation Loop
 
 A disciplined agentic loop for implementing work items one at a time:
-**implement → review → fix → PR**. Every change goes through a subagent;
-the main agent never edits code during the loop.
+**implement → review → fix → align docs → PR**. Every change goes through a
+subagent; the main agent never edits code during the loop.
 
 ## 0. Setup
 
@@ -83,9 +83,28 @@ If either review finds actionable issues:
   (whitespace, typos, comments). Behavioural, structural, or logic changes
   always delegate.
 
-## 4. PR
+## 4. Align docs
 
-When all items pass review:
+When all items pass review and before creating the PR, check whether the
+code changes need documentation updates:
+
+1. **Identify affected docs**: grep the diff for changes that touch public
+   APIs, CLI flags, config formats, environment variables, data schemas,
+   architecture decisions (ADRs), or anything documented externally.
+2. **Check project conventions**: look for `CONTEXT.md`, `README.md`,
+   `docs/ARCHITECTURE.md`, `docs/adr/`, or any `*_docs/` directory that maps
+   to the changed code.
+3. **Delegate doc updates**: if the diff changes something documented, spawn
+   a `worker` subagent with `context: "fresh"` to:
+   - Read the relevant docs and the code diff.
+   - Update docs to match the new behaviour.
+   - Skip docs that are still accurate — no speculative rewrites.
+4. **No news is good news**: if nothing documented changed, skip this phase
+   entirely. The PR step proceeds directly.
+
+## 5. PR
+
+When all items pass review and docs are aligned:
 
 1. `git checkout -b <branch-name>` (descriptive, e.g. `feat-<issue-number>`)
 2. `git add` the changed files (only what belongs to the task)
@@ -97,11 +116,11 @@ When all items pass review:
 ## Dependency resolution
 
 - **Sequential**: if item B depends on item A's code, implement A → review A
-  → fix A → merge A (or at least commit A on a shared base) → then implement B.
-  No worktree needed for sequential.
+  → fix A → align docs A → merge A (or at least commit A on a shared base)
+  → then implement B. No worktree needed for sequential.
 - **Parallel**: if items are independent, run each through the full
-  implement/review/fix loop in its own git worktree (`worktree: true` on the
-  subagent call). Merge them in dependency order.
+  implement/review/fix/align-docs loop in its own git worktree (`worktree: true`
+  on the subagent call). Merge them in dependency order.
 
 ## Completion criterion per item
 
@@ -109,4 +128,5 @@ The loop is done with an item when:
 - All acceptance criteria from the item description are met
 - All tests pass (existing + new)
 - A reviewer (Standards + Spec) reports zero actionable findings
+- Docs are aligned with the change (or confirmed unnecessary)
 - The item is referenced in a PR or commit
