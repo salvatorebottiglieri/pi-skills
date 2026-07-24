@@ -119,14 +119,14 @@ function handleCreateResource(req: Request): Promise<Response>
 Before producing artifacts, classify the ticket. If it matches any of these,
 skip program design entirely, append a one-line note to the ticket, and stop:
 
-| Tipo | Esempio | Ragione |
+| Type | Example | Reason |
 |---|---|---|
-| **Bug fix** | "NullPointerError quando include è vuoto" | La diagnosi è il lavoro vero; il fix è 2 righe |
-| **Refactor meccanico** | "Rename `UserService` → `AccountService`" | LSP rename basta |
-| **Feature banale** | "Aggiungi campo `phone` al profilo" | Segue esattamente il pattern esistente |
-| **One-shot** | Script monouso, migrazione dati | Non serve design riusabile |
+| **Bug fix** | "NullPointerError when include is empty" | The diagnosis is the real work; fix is 2 lines |
+| **Mechanical refactor** | "Rename `UserService` → `AccountService`" | LSP rename is enough |
+| **Trivial feature** | "Add `phone` field to profile" | Follows existing pattern exactly |
+| **One-shot** | One-off script, data migration | No reusable design needed |
 
-Se non sei sicuro, fallo. 5 minuti di design > 2 ore di riwork.
+| When in doubt, do it. 5 minutes of design > 2 hours of rework.
 
 ### 4. Append to the ticket
 
@@ -147,7 +147,7 @@ The appended section uses this structure:
 ```markdown
 ## Program Design
 
-_CLASSIFY: <tipo di cambiamento>_
+_CLASSIFY: <change type>_
 
 ### Call-stack tree
 
@@ -174,9 +174,9 @@ Omit sections that are empty — don't produce "N/A" placeholders.
 
 Do **not** proceed to implementation. Report what was produced and ask:
 
-> "Il program design per questo ticket è pronto. I signatures sono contratto
-> per l'implementazione. Vuoi modificare qualcosa o procedere con
-> implement-loop?"
+> "The program design for this ticket is ready. The signatures are the
+> contract for implementation. Would you like to modify anything or proceed
+> with implement-loop?"
 
 If the user corrects anything, incorporate the fix and re-append the section
 (overwrite the previous one). Only when they approve does the ticket move to
@@ -189,26 +189,26 @@ If the user corrects anything, incorporate the fix and re-append the section
   as contract — it implements exactly those interfaces without guessing.
 - **code-review (in implement-loop):** The spec-axis reviewer compares the
   diff against the ticket body, which now includes the program design.
-  "Signature dice `createResource(input: ResourceInput): Promise<Resource>`,
-  ma l'implementazione usa `save(input)` e restituisce `any`."
+> "Signature says `createResource(input: ResourceInput): Promise<Resource>`,
+>  but the implementation uses `save(input)` and returns `any`."
 
 ## Relationships with other skills
 
-| Skill | Relazione |
+| Skill | Relationship |
 |---|---|
-| `codebase-design` | Fornisce il lessico (deep module, seam). Program design è l'applicazione *concreta*: "la seam è questa signature." |
-| `domain-modeling` | Program design usa il vocabolario di `CONTEXT.md`. Se emerge un termine ambiguo, chiama `domain-modeling`. |
-| `to-issues` | Produce i ticket. Program design prende UN ticket e lo dettaglia con le signature. |
-| `prototype` | Se il dubbio di design è troppo grosso per program design (es. "non so che forma deve avere"), prima fai un prototype, poi program design sui risultati. |
-| `improve-codebase-architecture` | Se durante program design emerge un dubbio architetturale ("questa funzione non dovrebbe stare qui"), escalalo — non risolverlo in questa skill. |
+| `codebase-design` | Provides vocabulary (deep module, seam). Program design is the *concrete* application: "the seam is this signature." |
+| `domain-modeling` | Program design uses `CONTEXT.md` vocabulary. If an ambiguous term emerges, call `domain-modeling`. |
+| `to-issues` | Produces tickets. Program design takes ONE ticket and details it with signatures. |
+| `prototype` | If the design question is too broad for program design (e.g. "I don't know what shape this should take"), prototype first, then program design on the results. |
+| `improve-codebase-architecture` | If an architectural concern emerges during program design ("this function shouldn't be here"), escalate it — don't resolve it in this skill. |
 
 ## Classification cheat sheet
 
-| Se il ticket dice… | Allora è… | Program design? |
+| If the ticket says… | Then it's… | Program design? |
 |---|---|---|
-| "Aggiungi endpoint X" | Feature con orchestrazione | Sì — call-stack + signatures |
-| "Aggiungi campo X al modello Y" | Feature banale | Skip, o solo signatures se il campo cambia logica |
-| "Refactor: estrai modulo X da Y" | Refactor meccanico | Skip |
-| "Bug: crash quando X è null" | Bug fix | Skip |
-| "Integra API esterna Z" | Feature con orchestrazione | Sì — call-stack + file-tree + signatures |
-| "Aggiorna dipendenza X a v2" | One-shot | Skip |
+| "Add endpoint X" | Feature with orchestration | Yes — call-stack + signatures |
+| "Add field X to model Y" | Trivial feature | Skip, or only signatures if the field changes logic |
+| "Refactor: extract module X from Y" | Mechanical refactor | Skip |
+| "Bug: crash when X is null" | Bug fix | Skip |
+| "Integrate external API Z" | Feature with orchestration | Yes — call-stack + file-tree + signatures |
+| "Update dependency X to v2" | One-shot | Skip |

@@ -230,9 +230,9 @@ before tickets are created.
 Do **not** proceed to tickets or implementation. Report what was produced and
 ask:
 
-> "L'architettura per questo PRD è pronta. I diagrammi e i contratti
-> descrivono come i servizi comunicano. Vuoi modificare qualcosa o procedere
-> con to-issues?"
+> "The architecture for this PRD is ready. The diagrams and contracts
+> describe how the services communicate. Would you like to modify anything
+> or proceed with to-issues?"
 
 If the user corrects anything, incorporate the fix and re-append the section
 (overwrite the previous one). Only when they approve does the PRD move back
@@ -245,8 +245,8 @@ to `ready-for-agent` — or directly to `to-issues`.
   inherits its piece of the architecture.
 - **program-design:** Reads the relevant ticket to produce per-ticket
   call-stack tree, file-tree diff, and type signatures. The architecture
-  provides context ("questo ticket implementa l'endpoint `PUT /resources/:slug`,
-  con queste signature").
+  provides context ("this ticket implements the `PUT /resources/:slug` endpoint,
+  with these signatures").
 - **implement-loop:** The implement subagent sees the full ticket body,
   which includes both the architecture context and the program design
   signatures.
@@ -255,24 +255,24 @@ to `ready-for-agent` — or directly to `to-issues`.
 
 Classify the PRD before producing artifacts. Skip if:
 
-| Tipo | Ragione |
+| Type | Reason |
 |---|---|
-| **Bug fix** | "400 error quando X è null" — nessuna nuova architettura |
-| **Feature banale** | "Aggiungi campo phone al profilo" — segue pattern esistente |
-| **Refactor meccanico** | "Rename UserService → AccountService" — nessun cambio architetturale |
-| **Solo dati** | Nuova tabella, nessun nuovo endpoint o orchestrazione — solo data model |
-| **Segue pattern esistente** | Nuova route CRUD identica alle 10 esistenti |
+| **Bug fix** | "400 error when X is null" — no new architecture |
+| **Trivial feature** | "Add phone field to profile" — follows existing pattern |
+| **Mechanical refactor** | "Rename UserService → AccountService" — no architectural change |
+| **Data only** | New table, no new endpoints or orchestration — data model only |
+| **Follows existing pattern** | New CRUD route identical to the 10 existing ones |
 
-Se non sei sicuro, fallo. 10 minuti di diagrammi > 3 ore di review su codice
-con l'architettura sbagliata.
+When in doubt, do it. 10 minutes of diagrams > 3 hours of reviewing code
+with the wrong architecture.
 
 ## Relationships with other skills
 
-| Skill | Relazione |
+| Skill | Relationship |
 |---|---|
-| `to-prd` | Produce il PRD. System architecture è un'evoluzione del PRD — aggiunge la sezione `## System Architecture`. |
-| `to-issues` | Legge il PRD (inclusa l'architettura) per creare ticket informati. |
-| `program-design` | System architecture descrive i contratti *esterni* (servizi). Program design descrive la forma *interna* del codice (signature). Sono complementari. |
-| `codebase-design` | Fornisce il lessico (deep module, seam). System architecture è un livello diverso — riguarda le connessioni tra moduli, non la profondità di un modulo. |
-| `domain-modeling` | System architecture usa `CONTEXT.md`. Se durante l'architettura emerge un termine ambiguo, chiama `domain-modeling`. |
-| `improve-codebase-architecture` | Se durante system architecture emerge un problema strutturale (es. "questo servizio è troppo accoppiato"), annotalo ma non risolverlo qui. |
+| `to-prd` | Produces the PRD. System architecture evolves it — adds the `## System Architecture` section. |
+| `to-issues` | Reads the PRD (now including architecture) to create informed tickets. |
+| `program-design` | System architecture describes *external* contracts (services). Program design describes the *internal* shape of code (signatures). They are complementary. |
+| `codebase-design` | Provides vocabulary (deep module, seam). System architecture is a different layer — it's about connections between modules, not a module's depth. |
+| `domain-modeling` | System architecture uses `CONTEXT.md`. If an ambiguous term emerges during architecture, call `domain-modeling`. |
+| `improve-codebase-architecture` | If a structural problem emerges during system architecture (e.g. "this service is too coupled"), note it but don't resolve it here. |

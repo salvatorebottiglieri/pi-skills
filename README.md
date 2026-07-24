@@ -26,11 +26,11 @@ check → test → lint → PR gate.
 
 ### `system-architecture` ⚠️ WIP
 
-> **Work in progress.** Prima versione, non ancora battle-tested.
+> **Work in progress.** First version, not yet battle-tested.
 >
-> Progetta l'architettura di sistema per un PRD: produce Mermaid sequence/state
-> diagrams, endpoint contracts e data model, e li appende al PRD sul tracker.
-> Progettato per essere usato tra `/to-prd` e `/to-issues`.
+> Design system architecture for a PRD: produce Mermaid sequence/state
+> diagrams, endpoint contracts, and data models, then append them to the
+> PRD on the tracker. Designed to be used between `/to-prd` and `/to-issues`.
 
 ```
 /system-architecture <prd-number>
@@ -38,11 +38,11 @@ check → test → lint → PR gate.
 
 ### `program-design` ⚠️ WIP
 
-> **Work in progress.** Prima versione, non ancora battle-tested.
+> **Work in progress.** First version, not yet battle-tested.
 >
 > Produce program design artifacts (call-stack tree, file-tree diff, type
-> signatures) per un ticket e li appende al ticket sul tracker.
-> Progettato per essere usato tra `/to-issues` e `implement-loop`.
+> signatures) for a ticket and append them to the ticket on the tracker.
+> Designed to be used between `/to-issues` and `implement-loop`.
 
 ```
 /program-design <ticket-number>
