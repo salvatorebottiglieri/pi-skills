@@ -24,6 +24,30 @@ check → test → lint → PR gate.
 /tightrope <task description>
 ```
 
+### `system-architecture` ⚠️ WIP
+
+> **Work in progress.** Prima versione, non ancora battle-tested.
+>
+> Progetta l'architettura di sistema per un PRD: produce Mermaid sequence/state
+> diagrams, endpoint contracts e data model, e li appende al PRD sul tracker.
+> Progettato per essere usato tra `/to-prd` e `/to-issues`.
+
+```
+/system-architecture <prd-number>
+```
+
+### `program-design` ⚠️ WIP
+
+> **Work in progress.** Prima versione, non ancora battle-tested.
+>
+> Produce program design artifacts (call-stack tree, file-tree diff, type
+> signatures) per un ticket e li appende al ticket sul tracker.
+> Progettato per essere usato tra `/to-issues` e `implement-loop`.
+
+```
+/program-design <ticket-number>
+```
+
 ## Install
 
 ### Pi
