@@ -9,11 +9,11 @@ disable-model-invocation: true
 ---
 
 # System Architecture
-
 Bridge the gap between **product requirements** (what the user needs) and
-**program design** (the shape of the code). Align on how services, endpoints,
-schemas, queues, and stores talk to each other — without getting into
-implementation details.
+**program design** (the shape of the code). Produce a **contract** — the
+shared agreement between services on what they send, receive, and store —
+before anyone writes code. Align on how services, endpoints, schemas, queues,
+and stores talk to each other, without getting into implementation details.
 
 `$ARGUMENTS` is the PRD issue to design. Pass a number, URL, or path.
 
@@ -32,6 +32,10 @@ The issue tracker should have been provided to you — run
 - **Read existing architecture.** Check if there are existing Mermaid diagrams,
   endpoint docs, or data models that already describe the area. If they exist,
   start from them and show only the diff.
+
+_Done when: you have read the PRD body, surveyed the relevant codebase area,
+read CONTEXT.md terms and ADRs, and identified whether existing diagrams or
+contracts already describe the area._
 
 ### 2. Classify the architecture type
 
@@ -57,7 +61,7 @@ components, or external systems.
 ````markdown
 ```mermaid
 sequenceDiagram
-  participant UI
+ + = new  ~ = modified  - = removed
   participant API
   participant ResourceService
   participant Store
@@ -77,7 +81,7 @@ sequenceDiagram
 - If the feature has multiple flows (happy path, error path, edge case), use separate diagrams with clear labels.
 
 #### Mermaid state diagram (stateDiagram-v2)
-
+ + = created  ~ = modified  - = removed
 Produce when the feature involves a stateful workflow with explicit transitions
 (order lifecycle, document status, onboarding steps, job pipeline).
 
@@ -238,18 +242,17 @@ If the user corrects anything, incorporate the fix and re-append the section
 (overwrite the previous one). Only when they approve does the PRD move back
 to `ready-for-agent` — or directly to `to-issues`.
 
-## How other skills use this
+## How this feeds other skills
 
-- **to-issues:** Reads the PRD (now with `## System Architecture`) and creates
-  tickets informed by the endpoint contracts and data model. Each ticket
-  inherits its piece of the architecture.
-- **program-design:** Reads the relevant ticket to produce per-ticket
-  call-stack tree, file-tree diff, and type signatures. The architecture
-  provides context ("this ticket implements the `PUT /resources/:slug` endpoint,
-  with these signatures").
-- **implement-loop:** The implement subagent sees the full ticket body,
-  which includes both the architecture context and the program design
-  signatures.
+| Skill | Effect |
+|---|---|
+| **to-issues** | Reads the PRD (now with `## System Architecture`) and creates tickets informed by the endpoint contracts and data model. Each ticket inherits its piece of the architecture. |
+| **program-design** | Works one ticket deeper: call-stack tree, file-tree diff, type signatures. The architecture says *which* endpoint, program design says *how*. |
+| **implement-loop** | The implement subagent sees the full ticket body — both architecture context and program design signatures. No separate handoff needed. |
+| `to-prd` | Produces the PRD. System architecture evolves it — adds the `## System Architecture` section. |
+| `codebase-design` | Provides vocabulary (deep module, seam). System architecture is a different layer — connections between modules, not depth of one. |
+| `domain-modeling` | Uses `CONTEXT.md` vocabulary. If a term is ambiguous during architecture, call `domain-modeling`. |
+| `improve-codebase-architecture` | If a structural problem emerges ("this service is too coupled"), note it but don't resolve it here. |
 
 ## When to skip
 
@@ -263,16 +266,4 @@ Classify the PRD before producing artifacts. Skip if:
 | **Data only** | New table, no new endpoints or orchestration — data model only |
 | **Follows existing pattern** | New CRUD route identical to the 10 existing ones |
 
-When in doubt, do it. 10 minutes of diagrams > 3 hours of reviewing code
-with the wrong architecture.
 
-## Relationships with other skills
-
-| Skill | Relationship |
-|---|---|
-| `to-prd` | Produces the PRD. System architecture evolves it — adds the `## System Architecture` section. |
-| `to-issues` | Reads the PRD (now including architecture) to create informed tickets. |
-| `program-design` | System architecture describes *external* contracts (services). Program design describes the *internal* shape of code (signatures). They are complementary. |
-| `codebase-design` | Provides vocabulary (deep module, seam). System architecture is a different layer — it's about connections between modules, not a module's depth. |
-| `domain-modeling` | System architecture uses `CONTEXT.md`. If an ambiguous term emerges during architecture, call `domain-modeling`. |
-| `improve-codebase-architecture` | If a structural problem emerges during system architecture (e.g. "this service is too coupled"), note it but don't resolve it here. |

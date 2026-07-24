@@ -33,10 +33,16 @@ The issue tracker should have been provided to you — run
 - **Classify the change.** Determine what kind of work this is (see §3). This
   decides which artifacts are worth producing.
 
+_Done when: you have read the ticket body, the relevant CONTEXT.md terms,
+and any ADRs touching the area, and you can classify the change._
+
 ### 2. Produce artifacts
 
 For each artifact type that fits the change, produce a draft. Do **not** write
-code or pseudocode for the implementation body — only the *shape*.
+code or pseudocode for the implementation body — only the **shape**. Every
+artifact encodes the **shape** of the change: what calls what (call-stack tree),
+where files live (file-tree diff), and what interfaces the code must satisfy
+(type signatures).
 
 #### Call-stack tree
 
@@ -55,7 +61,7 @@ Show the call stack with diff syntax:
    sendResponse
 ```
 
-+ = nuovo  ~ = modificato  - = rimosso
+ + = new  ~ = modified  - = removed
 
 Include only the functions that are part of **this** change. Existing functions
 that don't change are reference context, not part of the diff.
@@ -75,7 +81,7 @@ Produce this when the change creates or modifies files.
 ~    └── resource-route.ts        # MODIFIED — wires create action
 ```
 
-+ = creato  ~ = modificato  - = rimosso
+ + = created  ~ = modified  - = removed
 
 Each new or modified file gets a one-line rationale. Test files follow the
 project's naming convention.
@@ -91,7 +97,7 @@ signatures, or defines new data types.
 Use the project's language (TypeScript, Python, Go, etc.):
 
 ```ts
-// Nuove
+// New
 interface ResourceInput {
   name: string
   sourceUrl: string
@@ -100,7 +106,7 @@ interface ResourceInput {
 
 function createResource(input: ResourceInput): Promise<Resource>
 
-// Modificate
+// Modified
 // resource-route.ts — PUT /resources/:id now accepts `tags`
 function handleCreateResource(req: Request): Promise<Response>
 ```
@@ -126,7 +132,6 @@ skip program design entirely, append a one-line note to the ticket, and stop:
 | **Trivial feature** | "Add `phone` field to profile" | Follows existing pattern exactly |
 | **One-shot** | One-off script, data migration | No reusable design needed |
 
-| When in doubt, do it. 5 minutes of design > 2 hours of rework.
 
 ### 4. Append to the ticket
 
@@ -182,33 +187,15 @@ If the user corrects anything, incorporate the fix and re-append the section
 (overwrite the previous one). Only when they approve does the ticket move to
 `ready-for-agent` (or the implement-loop picks it up).
 
-## How other skills use this
+## How this shapes other skills
 
-- **implement-loop:** Passes the full ticket body to the implement subagent.
-  If `## Program Design` is present, the subagent treats the signatures there
-  as contract — it implements exactly those interfaces without guessing.
-- **code-review (in implement-loop):** The spec-axis reviewer compares the
-  diff against the ticket body, which now includes the program design.
-> "Signature says `createResource(input: ResourceInput): Promise<Resource>`,
->  but the implementation uses `save(input)` and returns `any`."
-
-## Relationships with other skills
-
-| Skill | Relationship |
+| Skill | Effect |
 |---|---|
+| **implement-loop** | Passes the full ticket body to the implement subagent. If `## Program Design` is present, the signatures there are contract — the subagent implements exactly those interfaces. |
+| **code-review** | The spec-axis reviewer compares the diff against the ticket body, now including the signatures. _"Signature says `createResource(...)`, but the implementation uses `save()` and returns `any`."_ |
 | `codebase-design` | Provides vocabulary (deep module, seam). Program design is the *concrete* application: "the seam is this signature." |
-| `domain-modeling` | Program design uses `CONTEXT.md` vocabulary. If an ambiguous term emerges, call `domain-modeling`. |
-| `to-issues` | Produces tickets. Program design takes ONE ticket and details it with signatures. |
-| `prototype` | If the design question is too broad for program design (e.g. "I don't know what shape this should take"), prototype first, then program design on the results. |
-| `improve-codebase-architecture` | If an architectural concern emerges during program design ("this function shouldn't be here"), escalate it — don't resolve it in this skill. |
+| `domain-modeling` | Program design uses `CONTEXT.md` vocabulary. If a term is ambiguous, call `domain-modeling`. |
+| `to-issues` | Produces tickets. Program design takes one ticket and adds signatures to it. |
+| `prototype` | If the shape isn't clear yet, prototype first, then program-design the result. |
+| `improve-codebase-architecture` | If an architectural concern emerges ("this function is in the wrong module"), escalate it — don't resolve it here. |
 
-## Classification cheat sheet
-
-| If the ticket says… | Then it's… | Program design? |
-|---|---|---|
-| "Add endpoint X" | Feature with orchestration | Yes — call-stack + signatures |
-| "Add field X to model Y" | Trivial feature | Skip, or only signatures if the field changes logic |
-| "Refactor: extract module X from Y" | Mechanical refactor | Skip |
-| "Bug: crash when X is null" | Bug fix | Skip |
-| "Integrate external API Z" | Feature with orchestration | Yes — call-stack + file-tree + signatures |
-| "Update dependency X to v2" | One-shot | Skip |
